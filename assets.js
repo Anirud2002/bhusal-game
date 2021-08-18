@@ -201,7 +201,7 @@ const startGame = () => {
         bomb.style.left = Math.floor(Math.random() * window.innerWidth) + "px"
         bomb.classList.add("fall")
         bombs.push(bomb)
-        setTimeout(startGame,  1000)
+        setTimeout(startGame,  500)
     }
     else{
         console.log(start)
@@ -218,10 +218,10 @@ const startGame = () => {
 
 
 function myLoadFunction() {
-	const checkCollision = setInterval(collision, 100)
+	const checkCollision = setInterval(collision, 10)
 	const explosionInterval = setInterval(checkExplosion, 10)
 	const removeExplosionMarks = setInterval(removeMarks, 2000)
-	const healthCheck = setInterval(updateHealth, 10)
+	const healthCheck = setInterval(updateHealth, 100)
 	timeout = setInterval(move, 10);
 	document.addEventListener('keydown', keydown);
 	document.addEventListener('keyup', keyup);
