@@ -8,18 +8,25 @@ var player = document.getElementById('player');
 const startBtn = document.querySelector(".start")
 const bombsDiv = document.querySelector(".bombs")
 const explosionDiv = document.querySelector(".explo-div")
+const arrowDiv = document.querySelector(".arrow-div")
 const health = document.querySelector(".health")
 const gameOver = document.querySelector(".game-over")
+const score = document.querySelector(".score")
+let arrowPressed = false
+let lastArrowPressed = false
 
 let bombs = []
+let arrows = []
 let start = false
 let healthLeft = 3
 let healthLoss = false
+let scoreCount = 0
 
 startBtn.addEventListener('click', () => {
     startBtn.className = "start hide"
 	gameOver.className = "game-over"
 	healthLeft = 3
+	scoreCount = 0
 	for(let i = 0; i < healthLeft; i++){
         const life = document.createElement("li")
 		health.appendChild(life)
@@ -47,6 +54,9 @@ function keyup(event) {
 	if (event.keyCode == 40) {
 		downPressed = false;
 		lastPressed = 'down';
+	}
+	if(event.keyCode == 32){
+		player.className = "character stand down"
 	}
 
 	player.className = 'character stand ' + lastPressed;
@@ -122,6 +132,33 @@ function keydown(event) {
 	if (event.keyCode == 40) {
 		downPressed = true;
 	}
+	if(event.keyCode == 32){
+		arrowPressed = true
+		if(lastArrowPressed){
+			arrowPressed = false
+		}
+		if(arrowPressed){
+			lastArrowPressed = true
+			player.className = "character stand up fire"
+			shootArrow()
+		}
+	}
+}
+
+const makeItTrue = () => {
+	lastArrowPressed = false
+}
+ 
+
+const shootArrow = () => {
+	const arrow = document.createElement("div")
+	arrow.style.left = player.offsetLeft + "px"
+	arrow.style.top = player.offsetTop + "px"
+	arrow.classList.add("arrow")
+	arrowDiv.appendChild(arrow)
+	arrows.push(arrow)
+	arrowPressed = false
+	setTimeout(makeItTrue, 500)
 }
 
 const collision = () => {
@@ -134,11 +171,25 @@ const collision = () => {
             let xDiff = bombX - playerX
             let yDiff = bombY - playerY
             let distance = Math.sqrt(xDiff * xDiff + yDiff * yDiff)
-            if(distance < 50){
-				healthLoss = true
-                
+            if(distance < 39.69){
+				healthLoss = true 
             }
-        }) 
+			arrows.forEach(arrow => {
+				let arrowX = arrow.offsetLeft 
+				let arrowY = arrow.offsetTop
+				let a = bombX - arrowX 
+				let b = bombY - arrowY
+				let distanceArrow = Math.sqrt(a*a + b*b)
+				if(distanceArrow < 29.69){
+					bomb.remove()
+					arrow.remove()
+					arrows = []
+					console.log()
+					scoreCount++
+				} 
+			})
+        })
+
     }else{
         return
     }
@@ -157,7 +208,7 @@ const checkExplosion = () => {
 				explosion.style.left = explosionX - 25 + "px"
 				explosion.style.top = explosionY - 20 + "px"
 				let explosionSound = new Audio("./explosion.wav")
-				explosionSound.play()
+				// explosionSound.play()
             }
         })
     }else{
@@ -180,6 +231,8 @@ const updateHealth = () => {
 			gameOver.className = "game-over show"
             health.innerHTML = ''
             start = false
+			bombs = []
+			arrows = []
             startBtn.className = "start show"
         } else {
             health.innerHTML = ''
@@ -199,12 +252,10 @@ const startGame = () => {
         bomb.classList.add("bomb")
         bombsDiv.appendChild(bomb)
         bomb.style.left = Math.floor(Math.random() * window.innerWidth) + "px"
-        bomb.classList.add("fall")
         bombs.push(bomb)
         setTimeout(startGame,  500)
     }
     else{
-        console.log(start)
         bombs = []
         document.querySelectorAll(".bomb").forEach(bomb => {
             bomb.remove()
@@ -214,14 +265,31 @@ const startGame = () => {
     
 }
 
+const removeArrow = () => {
+	document.querySelectorAll(".arrow").forEach(arrow => {
+		if(arrow.offsetTop < 0){
+			arrow.remove()
+			arrows = []
+		}
+	})
+}
+
+
+const checkScore = () => {
+	score.textContent = scoreCount
+}
+
+
 
 
 
 function myLoadFunction() {
 	const checkCollision = setInterval(collision, 10)
 	const explosionInterval = setInterval(checkExplosion, 10)
-	const removeExplosionMarks = setInterval(removeMarks, 2000)
-	const healthCheck = setInterval(updateHealth, 100)
+	const removeExplosionMarks = setInterval(removeMarks, 1000)
+	const healthCheck = setInterval(updateHealth, 500)
+	const arrowRemoval = setInterval(removeArrow, 10)
+	const seeScore = setInterval(checkScore, 10)
 	timeout = setInterval(move, 10);
 	document.addEventListener('keydown', keydown);
 	document.addEventListener('keyup', keyup);

@@ -600,6 +600,19 @@ aside ul {
   height: 10px;
   position: absolute;
   background-position: 0px -401px;
+  transform: rotate(-90deg);
+  animation: shoot 0.5s linear;
+}
+.score-board {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
+@keyframes shoot {
+  100% {
+    top: -100px;
+  }
 }
 
 .bomb {
@@ -609,10 +622,10 @@ aside ul {
   position: absolute;
   background-position: -96px -401px;
   transform: rotate(90deg);
-}
-.bomb.fall {
   animation: bombFall 2s cubic-bezier(0.87, 0.09, 0.86, 0.44);
   bottom: 0%;
+}
+.bomb.fall {
 }
 
 @keyframes bombFall {
