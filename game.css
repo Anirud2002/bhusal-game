@@ -603,11 +603,6 @@ aside ul {
   transform: rotate(-90deg);
   animation: shoot 0.5s linear;
 }
-.score-board {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-}
 
 @keyframes shoot {
   100% {
@@ -615,6 +610,11 @@ aside ul {
   }
 }
 
+.score-board {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
 .bomb {
   background-image: url(images/sprites.png);
   width: 31px;

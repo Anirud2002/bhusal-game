@@ -173,6 +173,7 @@ const collision = () => {
             let distance = Math.sqrt(xDiff * xDiff + yDiff * yDiff)
             if(distance < 39.69){
 				healthLoss = true 
+				bomb.remove()
             }
 			arrows.forEach(arrow => {
 				let arrowX = arrow.offsetLeft 
