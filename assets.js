@@ -22,19 +22,7 @@ let healthLeft = 3
 let healthLoss = false
 let scoreCount = 0
 
-startBtn.addEventListener('click', () => {
-    startBtn.className = "start hide"
-	gameOver.className = "game-over"
-	healthLeft = 3
-	scoreCount = 0
-	for(let i = 0; i < healthLeft; i++){
-        const life = document.createElement("li")
-		health.appendChild(life)
-    }
-	start = true 
-	startGame()
-    
-})
+
 
 
 function keyup(event) {
@@ -140,27 +128,50 @@ function keydown(event) {
 		if(arrowPressed){
 			lastArrowPressed = true
 			player.className = "character stand up fire"
+			//following function is invoked then space is clicked
 			shootArrow()
 		}
 	}
 }
+//cod starts from here
+// click event of start button
+startBtn.addEventListener('click', () => {
+    startBtn.className = "start hide"
+	gameOver.className = "game-over"
+	healthLeft = 3
+	scoreCount = 0
+	for(let i = 0; i < healthLeft; i++){
+        const life = document.createElement("li")
+		health.appendChild(life)
+    }
+	start = true 
+	// following function is executed and code is just below this function
+	startGame()
+    
+})
 
-const makeItTrue = () => {
-	lastArrowPressed = false
+const startGame = () => {
+    if(start){
+		//bomb is created using javascript
+		//bomb animation happens due to css
+        const bomb = document.createElement("div")
+        bomb.classList.add("bomb")
+        bombsDiv.appendChild(bomb)
+        bomb.style.left = Math.floor(Math.random() * window.innerWidth) + "px"
+        bombs.push(bomb)
+        setTimeout(startGame,  500)
+    }
+    else{
+        bombs = []
+        document.querySelectorAll(".bomb").forEach(bomb => {
+            bomb.remove()
+        })
+        return
+    }
+    
 }
- 
 
-const shootArrow = () => {
-	const arrow = document.createElement("div")
-	arrow.style.left = player.offsetLeft + "px"
-	arrow.style.top = player.offsetTop + "px"
-	arrow.classList.add("arrow")
-	arrowDiv.appendChild(arrow)
-	arrows.push(arrow)
-	arrowPressed = false
-	setTimeout(makeItTrue, 500)
-}
-
+//this function is to check if there is collison between player and any of the bombs and is invoked every 10 sec for precision
 const collision = () => {
     if(start){
         let playerX = player.offsetLeft
@@ -170,11 +181,14 @@ const collision = () => {
             let bombY = bomb.offsetTop
             let xDiff = bombX - playerX
             let yDiff = bombY - playerY
+			// calculating the distance
             let distance = Math.sqrt(xDiff * xDiff + yDiff * yDiff)
             if(distance < 39.69){
+				//here health loss will be true which is important in updateHealth() function
 				healthLoss = true 
 				bomb.remove()
             }
+			// this is to check collison between arrow and bomb just like above
 			arrows.forEach(arrow => {
 				let arrowX = arrow.offsetLeft 
 				let arrowY = arrow.offsetTop
@@ -196,6 +210,20 @@ const collision = () => {
     }
 }
 
+//this function is to shoot arrow
+const shootArrow = () => {
+	//animation of arrow happens due to css code
+	const arrow = document.createElement("div")
+	arrow.style.left = player.offsetLeft + "px"
+	arrow.style.top = player.offsetTop + "px"
+	arrow.classList.add("arrow")
+	arrowDiv.appendChild(arrow)
+	arrows.push(arrow)
+	arrowPressed = false
+	setTimeout(makeItTrue, 500)
+}
+
+// this function is to show that explosion image at bottom of screen and is invoked every 10 miliseconds
 const checkExplosion = () => {
     if(start){
         bombs.forEach(bomb => {
@@ -217,6 +245,7 @@ const checkExplosion = () => {
     }
 }
 
+//this function is to remove the explosion image every 1 second
 const removeMarks = () => {
     const marks = document.querySelectorAll('.explosion')
     marks.forEach(mark => {
@@ -224,11 +253,13 @@ const removeMarks = () => {
     })
 }
 
+//this function validates the health of player every .5 seconds
 const updateHealth = () => {
+	// if health loss is true following code runs
     if(healthLoss){  
-
         healthLeft--
         if(healthLeft === 0 || healthLeft < 0){
+			// if health becomes zero gameover screen is shown
 			gameOver.className = "game-over show"
             health.innerHTML = ''
             start = false
@@ -236,6 +267,7 @@ const updateHealth = () => {
 			arrows = []
             startBtn.className = "start show"
         } else {
+			//if health is not zero, health decreases by one and only two health icon is shown on screen
             health.innerHTML = ''
             for(let i = 0; i < healthLeft; i++){
 				const life = document.createElement("li")
@@ -247,25 +279,7 @@ const updateHealth = () => {
     
 }
 
-const startGame = () => {
-    if(start){
-        const bomb = document.createElement("div")
-        bomb.classList.add("bomb")
-        bombsDiv.appendChild(bomb)
-        bomb.style.left = Math.floor(Math.random() * window.innerWidth) + "px"
-        bombs.push(bomb)
-        setTimeout(startGame,  500)
-    }
-    else{
-        bombs = []
-        document.querySelectorAll(".bomb").forEach(bomb => {
-            bomb.remove()
-        })
-        return
-    }
-    
-}
-
+//this function removes arrow if it not on the screen and is executed every 10 miliseconds
 const removeArrow = () => {
 	document.querySelectorAll(".arrow").forEach(arrow => {
 		if(arrow.offsetTop < 0){
@@ -275,15 +289,18 @@ const removeArrow = () => {
 	})
 }
 
-
+//this function checks the score of player every 10 miliseconds
 const checkScore = () => {
 	score.textContent = scoreCount
 }
 
 
+//this code runs to make the lastarrowpressed variable false every .5s so that player can only shoot after .5 sec
+const makeItTrue = () => {
+	lastArrowPressed = false
+}
 
-
-
+// has many setInterval function to run above functions
 function myLoadFunction() {
 	const checkCollision = setInterval(collision, 10)
 	const explosionInterval = setInterval(checkExplosion, 10)
@@ -296,5 +313,5 @@ function myLoadFunction() {
 	document.addEventListener('keyup', keyup);
 }
 
-
+// once everything is loaded on the DOM, myLoadFunction is invoked
 document.addEventListener('DOMContentLoaded', myLoadFunction);
